@@ -11,9 +11,9 @@ class ChromeJS {
       port: 9222,
       headless: true,
       windowSize: {},
-      additionalChromeFlags: []
+      additionalChromeFlags: [],
       // waitTimeout: 30000,
-      // gotoTimeout: 30000,
+      gotoTimeout: 10000,
       // loadTimeout: 30000,
       // evaluateTimeout: 30000,
       // typeInterval: 20
