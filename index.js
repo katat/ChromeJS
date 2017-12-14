@@ -37,7 +37,7 @@ class ChromeJS {
   }
 
   _createChromeLauncher(options) {
-    const flags = []
+    const flags = ['--no-sandbox', '--disable-setuid-sandbox']
     flags.push('--disable-gpu')
     if (options.headless) {
       flags.push('--headless')
