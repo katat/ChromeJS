@@ -207,6 +207,67 @@ class ChromeJS {
     }
   }
 
+  async move(selector, x, y, tx, ty) {
+
+      //depend on getBoundingClientRect()
+      let bounding = `document.querySelector('${selector}').getBoundingClientRect()`
+      let coordinatesX = `(${bounding}.width / 2) + ${bounding}.left`;
+      let coordinatesY = `(${bounding}.height / 2) + ${bounding}.top`;
+      let movew = `${coordinatesX} + ${x}`;
+      let moveh = `${coordinatesY} + ${y}`;
+      let movetw = `${coordinatesX} + ${tx}`;
+      let moveth = `${coordinatesY} + ${ty}`;
+
+      //selector center coordinates Relative to Browser
+      let coordinatesX_B = `(${bounding}.width / 2) + ${bounding}.left + document.documentElement.scrollLeft`;
+      let coordinatesY_B = `(${bounding}.height / 2) + ${bounding}.top  + document.documentElement.scrollTop`;
+      let cx_B,cy_B;
+      this.eval(coordinatesX_B).then((res) => {
+          cx_B = res.result.value
+          this.eval(coordinatesY_B).then((res) => {
+              cy_B = res.result.value
+              console.log('selector center coordinates Relative to Browser: ','(',Math.floor(cx_B),',',Math.floor(cy_B),')');
+          })
+      })
+
+      //selector center coordinates Relative to Viewport
+      let cx,cy;
+      this.eval(coordinatesX).then((res) => {
+          cx = res.result.value
+          this.eval(coordinatesY).then((res) => {
+              cy = res.result.value
+              console.log('selector center coordinates Relative to Viewport: ','(',Math.floor(cx),',',Math.floor(cy),')');
+          })
+      })
+
+      let movex,movey,movetx,movety;
+      //start_position setting
+      this.eval(movew).then((res) => {
+          movex = res.result.value;
+          movex = parseInt(movex);
+          this.eval(moveh).then((res) => {
+              movey = res.result.value;
+              movey = parseInt(movey);
+              console.log('this is start_position: ','(',movex,',',movey,')');
+              this.client.Input.dispatchMouseEvent({type: 'mouseMoved',  x: movex, y: movey});
+          })
+      })
+
+      await this.sleep(1000);
+
+      //end_position setting
+      this.eval(movetw).then((res) => {
+          movetx = res.result.value;
+          movetx = parseInt(movetx);
+          this.eval(moveth).then((res) => {
+              movety = res.result.value;
+              movety = parseInt(movety);
+              console.log('this is end_position: ','(',movetx,',',movety,')');
+              return this.client.Input.dispatchMouseEvent({type: 'mouseMoved',  x: movetx, y: movety});
+          })
+      })
+  }
+
   async scroll (selector, y = 0, x = 0) {
     let expr = `document.querySelector('${selector}').scrollTop += ${y}`
     return await this.eval(expr)
